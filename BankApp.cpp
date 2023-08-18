@@ -3,7 +3,7 @@
 
 int main()
 {
-    while (Interface::Menu());
+    while (Interface::MainMenu());
     return 0;
 }
 

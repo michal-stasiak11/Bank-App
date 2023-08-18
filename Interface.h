@@ -7,16 +7,21 @@
 #include <conio.h>
 #include "libxl.h"
 
+#define CLEAR system("cls")
+
 namespace Interface {
 
-	static std::string message = "";
+	static std::string MainMenuMessage = "";
+	static std::string AccountMenuMessage = "";
 
-	bool Menu();
+	bool MainMenu();
 
 	void Register();
 
 	void Login();
 
-	void AccountMenu(std::string login);
+	bool AccountMenu(int account_row);
+
+	void ChangePassword(int account_row);
 
 };
