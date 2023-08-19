@@ -24,4 +24,10 @@ namespace Interface {
 
 	void ChangePassword(int account_row);
 
+	void Deposit(int account_row);
+
+	void Withdraw(int account_row);
+
+	void AccountBalance(int account_row);
+
 };

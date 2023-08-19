@@ -19,8 +19,10 @@ bool Interface::MainMenu()
 	case 2 :
 		Interface::Login();
 		return true;
-	default :
+	case 3 :
 		return false;
+	default :
+		return true;
 	}
 }
 
@@ -58,6 +60,7 @@ void Interface::Register()
 			int row = sheet->lastFilledRow();
 			sheet->writeStr(row, 1, std::wstring(login.begin(), login.end()).data());
 			sheet->writeStr(row, 2, std::wstring(password.begin(), password.end()).data());
+			sheet->writeNum(row, 3, 0);
 			Interface::MainMenuMessage = "Account created succsefully\n\n";
 			credentials->save(L"credentials.xlsx");
 			credentials->release();
@@ -112,15 +115,29 @@ bool Interface::AccountMenu(int account_row)
 	std::cout
 		<< "Choose one of the following options : \n\n"
 		<< "[1] Change password\n"
-		<< "[2] Log out\n\n";
+		<< "[2] Deposit money\n"
+		<< "[3] Withdraw money\n"
+		<< "[4] Account balance\n"
+		<< "[5] Log out\n\n";
 	std::cin >> option;
 	switch (option)
 	{
 	case 1:
 		Interface::ChangePassword(account_row);
 		return true;
-	default :
+	case 2 :
+		Interface::Deposit(account_row);
+		return true;
+	case 3 :
+		Interface::Withdraw(account_row);
+		return true;
+	case 4 :
+		Interface::AccountBalance(account_row);
+		return true;
+	case 5 :
 		return false;
+	default :
+		return true;
 	}
 }
 
@@ -159,5 +176,75 @@ void Interface::ChangePassword(int account_row)
 		}
 	}
 }
+
+void Interface::Deposit(int account_row)
+{
+	CLEAR;
+	libxl::Book* credentials = xlCreateXMLBook();
+	if (credentials->load(L"credentials.xlsx"))
+	{
+		libxl::Sheet* sheet = credentials->getSheet(0);
+		if (sheet)
+		{
+			std::cout << "Enter the sum to deposit : ";
+			double sum;
+			std::cin >> sum;
+			sheet->writeNum(account_row, 3, sheet->readNum(account_row, 3) + sum);
+			Interface::AccountMenuMessage = "Deposit successfull\n\n";
+			credentials->save(L"credentials.xlsx");
+			credentials->release();
+			return;
+		}
+	}
+}
+
+void Interface::Withdraw(int account_row) 
+{
+	{
+		CLEAR;
+		libxl::Book* credentials = xlCreateXMLBook();
+		if (credentials->load(L"credentials.xlsx"))
+		{
+			libxl::Sheet* sheet = credentials->getSheet(0);
+			if (sheet)
+			{
+				std::cout << "Enter the sum to withdraw : ";
+				double sum;
+				std::cin >> sum;
+				if (sum > sheet->readNum(account_row, 3))
+				{
+					Interface::AccountMenuMessage = "Your account does not have enough money to withdraw\n\n";
+					return;
+				}
+				sheet->writeNum(account_row, 3, sheet->readNum(account_row, 3) - sum);
+				Interface::AccountMenuMessage = "Withdrawal successfull\n\n";
+				credentials->save(L"credentials.xlsx");
+				credentials->release();
+				return;
+			}
+		}
+	}
+}
+
+void Interface::AccountBalance(int account_row)
+{
+	{
+		CLEAR;
+		libxl::Book* credentials = xlCreateXMLBook();
+		if (credentials->load(L"credentials.xlsx"))
+		{
+			libxl::Sheet* sheet = credentials->getSheet(0);
+			if (sheet)
+			{
+				Interface::AccountMenuMessage = "Your account balance is : " + std::to_string(sheet->readNum(account_row,3)).substr(0, std::to_string(sheet->readNum(account_row, 3)).find(".") + 3) + "\n\n";
+				credentials->save(L"credentials.xlsx");
+				credentials->release();
+				return;
+			}
+		}
+	}
+}
+
+
 
 
