@@ -5,6 +5,8 @@
 #include <string>
 #include <sstream>
 #include <conio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "libxl.h"
 
 #define CLEAR system("cls")
@@ -28,6 +30,10 @@ namespace Interface {
 
 	void Withdraw(int account_row);
 
-	void AccountBalance(int account_row);
+	void AccountInfo(int account_row);
+
+	void Transfer(int account_row);
 
 };
+
+std::wstring AccountNumber(int length);
