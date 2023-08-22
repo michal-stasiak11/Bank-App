@@ -5,11 +5,8 @@
 #include <string>
 #include <sstream>
 #include <conio.h>
-#include <stdlib.h>
-#include <time.h>
 #include "libxl.h"
-
-#define CLEAR system("cls")
+#include "Tools.h"
 
 namespace Interface {
 
@@ -34,6 +31,7 @@ namespace Interface {
 
 	void Transfer(int account_row);
 
+	bool DeleteAccount(int account_row);
+
 };
 
-std::wstring AccountNumber(int length);
