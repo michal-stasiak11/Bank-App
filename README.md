@@ -8,3 +8,6 @@ Application is a loose simulator of a bank account management. Users can create 
 - money withdrawal
 - cheking the account balance and its account number
 - transfering money to another account
+- account deletion
+
+Additionally, the Tools.cpp file contains functions and macros essential for the clearance of code.
