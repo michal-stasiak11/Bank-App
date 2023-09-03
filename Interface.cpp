@@ -29,7 +29,7 @@ void Interface::Register()
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if (credentials->load(L"credentials.xlsx"))
+	if (credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
@@ -70,8 +70,14 @@ void Interface::Register()
 			sheet->writeStr(account_row, 2, ToWString(password).data());
 			sheet->writeStr(account_row, 3, ToWString(account_number).data());
 			sheet->writeNum(account_row, 4, 0);
+
+			std::ofstream file;
+			file.open("resources/credentials/" + login + ".log", std::ios::app);
+			file << GetTime() + " ===== " + "Account created" << "\n";
+			file.close();
+
 			Interface::MainMenuMessage = "Account created succsefully.\n\n";
-			credentials->save(L"credentials.xlsx");
+			credentials->save(L"resources/credentials.xlsx");
 			credentials->release();
 			return;
 		}
@@ -82,7 +88,7 @@ void Interface::Login()
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if(credentials->load(L"credentials.xlsx"))
+	if(credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
@@ -156,7 +162,7 @@ void Interface::ChangePassword(int account_row)
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if (credentials->load(L"credentials.xlsx"))
+	if (credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
@@ -179,8 +185,14 @@ void Interface::ChangePassword(int account_row)
 				return;
 			}
 			sheet->writeStr(account_row, 2, ToWString(new_password).data());
-			Interface::AccountMenuMessage = "Password updated succsefully.\n\n";
-			credentials->save(L"credentials.xlsx");
+
+			std::ofstream file;
+			file.open("resources/credentials/" + ToString(sheet->readStr(account_row, 1)) + ".log", std::ios::app);
+			file << GetTime() + " ===== " + "Password changed" << "\n";
+			file.close();
+
+			Interface::AccountMenuMessage = "Password changed succsefully.\n\n";
+			credentials->save(L"resources/credentials.xlsx");
 			credentials->release();
 			return;
 		}
@@ -191,7 +203,7 @@ void Interface::Deposit(int account_row)
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if (credentials->load(L"credentials.xlsx"))
+	if (credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
@@ -208,8 +220,14 @@ void Interface::Deposit(int account_row)
 				return;
 			}
 			sheet->writeNum(account_row, 4, sheet->readNum(account_row, 4) + sum);
+
+			std::ofstream file;
+			file.open("resources/credentials/" + ToString(sheet->readStr(account_row, 1)) + ".log", std::ios::app);
+			file << GetTime() + " ===== " + "Deposited : " << std::setprecision(2) << std::fixed << sum << "\n";
+			file.close();
+
 			Interface::AccountMenuMessage = "Deposit successfull\n\n";
-			credentials->save(L"credentials.xlsx");
+			credentials->save(L"resources/credentials.xlsx");
 			credentials->release();
 			return;
 		}
@@ -220,7 +238,7 @@ void Interface::Withdraw(int account_row)
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if (credentials->load(L"credentials.xlsx"))
+	if (credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
@@ -242,8 +260,14 @@ void Interface::Withdraw(int account_row)
 				return;
 			}
 			sheet->writeNum(account_row, 4, sheet->readNum(account_row, 4) - sum);
+
+			std::ofstream file;
+			file.open("resources/credentials/" + ToString(sheet->readStr(account_row, 1)) + ".log", std::ios::app);
+			file << GetTime() + " ===== " + "Withdrawn : " << std::setprecision(2) << std::fixed << sum << "\n";
+			file.close();
+
 			Interface::AccountMenuMessage = "Withdrawal successfull.\n\n";
-			credentials->save(L"credentials.xlsx");
+			credentials->save(L"resources/credentials.xlsx");
 			credentials->release();
 			return;
 		}
@@ -254,14 +278,14 @@ void Interface::AccountInfo(int account_row)
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if (credentials->load(L"credentials.xlsx"))
+	if (credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
 		{
 			Interface::AccountMenuMessage = "Your account number is : " + ToString(sheet->readStr(account_row, 3)) + "\n";
 			Interface::AccountMenuMessage += "Your account balance is : " + std::to_string(sheet->readNum(account_row, 4)).substr(0, std::to_string(sheet->readNum(account_row, 4)).find(".") + 3) + "\n\n";
-			credentials->save(L"credentials.xlsx");
+			credentials->save(L"resources/credentials.xlsx");
 			credentials->release();
 			return;
 		}
@@ -272,7 +296,7 @@ void Interface::Transfer(int account_row)
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if (credentials->load(L"credentials.xlsx"))
+	if (credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
@@ -313,8 +337,17 @@ void Interface::Transfer(int account_row)
 			}
 			sheet->writeNum(account_row, 4, sheet->readNum(account_row, 4) - sum);
 			sheet->writeNum(row, 4, sheet->readNum(row, 4) + sum);
+
+			std::ofstream file;
+			file.open("resources/credentials/" + ToString(sheet->readStr(account_row, 1)) + ".log", std::ios::app);
+			file << GetTime() + " ===== " + "Money transfer to [" << account_number << "] : " << std::setprecision(2) << std::fixed << sum << "\n";
+			file.close();
+			file.open("resources/credentials/" + ToString(sheet->readStr(row, 1)) + ".log", std::ios::app);
+			file << GetTime() + " ===== " + "Money transfer from [" << ToString(sheet->readStr(account_row, 3)) << "] : " << std::setprecision(2) << std::fixed << sum << "\n";
+			file.close();
+
 			Interface::AccountMenuMessage = "Transfer successfull.\n\n";
-			credentials->save(L"credentials.xlsx");
+			credentials->save(L"resources/credentials.xlsx");
 			credentials->release();
 			return;
 		}
@@ -325,7 +358,7 @@ bool Interface::DeleteAccount(int account_row)
 {
 	CLEAR;
 	libxl::Book* credentials = xlCreateXMLBook();
-	if (credentials->load(L"credentials.xlsx"))
+	if (credentials->load(L"resources/credentials.xlsx"))
 	{
 		libxl::Sheet* sheet = credentials->getSheet(0);
 		if (sheet)
@@ -350,9 +383,15 @@ bool Interface::DeleteAccount(int account_row)
 				Interface::AccountMenuMessage = "Wrong password.\n\n";
 				return true;
 			}
+
+			std::ofstream file;
+			file.open("resources/credentials/" + ToString(sheet->readStr(account_row, 1)) + ".log", std::ios::app);
+			file << GetTime() + " ===== " + "Account deleted" << "\n";
+			file.close();
+
 			sheet->removeRow(account_row, account_row);
 			Interface::MainMenuMessage = "Account deleted succsessfully.\n\n";
-			credentials->save(L"credentials.xlsx");
+			credentials->save(L"resources/credentials.xlsx");
 			credentials->release();
 			return false;
 		}
