@@ -8,7 +8,7 @@ bool Interface::MainMenu()
 	std::cout
 		<< "Choose one of the following options : \n\n"
 		<< "[1] Create an account\n"
-		<< "[2] Log in\n"
+		<< "[2] Log in hahaha\n"
 		<< "[3] Exit\n\n";
 	std::cin >> option;
 	switch (option)
